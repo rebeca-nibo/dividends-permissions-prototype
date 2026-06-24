@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Prototipo Dividendos</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css" />
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;min-height:100vh;display:flex;flex-direction:column;}
+.nibo-topnav{background:#1a2540;height:48px;display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0;}
+.nibo-logo{width:28px;height:28px;background:#7c5cbf;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.nibo-logo-dot{width:10px;height:10px;background:#fff;border-radius:50%;}
+.nibo-office{font-size:13px;color:#fff;font-weight:500;margin-left:8px;flex:1;}
+.nibo-nav-icons{display:flex;gap:4px;}
+.nibo-nav-icon{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.6);cursor:pointer;font-size:16px;}
+.nibo-badge{background:#e74c3c;color:#fff;font-size:9px;border-radius:999px;padding:1px 4px;position:relative;top:-6px;left:-6px;}
+.nibo-layout{display:flex;flex:1;}
+.nibo-sidebar{width:220px;background:#1a2540;flex-shrink:0;padding:12px 0;}
+.nibo-sidebar-section{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:.08em;text-transform:uppercase;padding:12px 16px 6px;}
+.nibo-sidebar-item{display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:13px;color:rgba(255,255,255,0.65);cursor:pointer;}
+.nibo-sidebar-item.active{color:#fff;}
+.nibo-sidebar-item i{font-size:16px;opacity:.7;}
+.nibo-sidebar-sub{padding:6px 16px 6px 42px;font-size:12px;color:rgba(255,255,255,0.45);cursor:pointer;}
+.nibo-sidebar-sub.active{color:#fff;font-weight:500;}
+.nibo-badge-pill{background:#e74c3c;color:#fff;font-size:9px;border-radius:999px;padding:1px 5px;margin-left:4px;}
+.nibo-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.nibo-module-header{background:#fff;border-bottom:1px solid #e8eaed;padding:0 24px;display:flex;align-items:center;}
+.nibo-module-title{font-size:15px;font-weight:500;color:#1a2540;padding:14px 20px 14px 0;border-right:1px solid #e8eaed;margin-right:20px;}
+.nibo-module-tab{font-size:13px;padding:14px 16px;cursor:pointer;color:#5f6368;border-bottom:2px solid transparent;}
+.nibo-module-tab.active{color:#7c5cbf;border-bottom:2px solid #7c5cbf;font-weight:500;}
+.nibo-content-wrap{display:flex;flex:1;overflow:hidden;}
+.nibo-subnav{width:180px;flex-shrink:0;border-right:1px solid #e8eaed;background:#fff;padding:16px 0;}
+.nibo-subnav-item{padding:8px 20px;font-size:13px;color:#5f6368;cursor:pointer;}
+.nibo-subnav-item.active{background:#f3f0fa;color:#7c5cbf;font-weight:500;}
+.nibo-page{flex:1;padding:24px;overflow-y:auto;}
+.nibo-page-title{font-size:16px;font-weight:500;color:#1a2540;margin-bottom:20px;}
+.nibo-card{background:#fff;border:1px solid #e8eaed;border-radius:8px;padding:20px;margin-bottom:16px;}
+.nibo-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.nibo-card-title{font-size:13px;font-weight:500;color:#1a2540;display:flex;align-items:center;gap:8px;}
+.nibo-card-desc{font-size:12px;color:#80868b;margin-top:3px;}
+.nibo-btn-edit{font-size:12px;color:#7c5cbf;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;}
+.toast{background:#e6f4ea;color:#1e7e34;border:1px solid #a8d5b5;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.empty{font-size:12px;color:#80868b;padding:16px 0;text-align:center;}
+.none-label{font-size:11px;color:#bbb;font-style:italic;}
+.nibo-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.nibo-table th{text-align:left;padding:8px 12px;font-size:11px;font-weight:500;color:#80868b;background:#f8f9fa;border-bottom:1px solid #e8eaed;border-top:1px solid #e8eaed;}
+.nibo-table td{padding:10px 12px;border-bottom:1px solid #f1f3f4;color:#3c4043;font-size:12px;vertical-align:top;}
+.nibo-table tr:hover td{background:#fafafa;}
+.cb{accent-color:#7c5cbf;width:14px;height:14px;cursor:pointer;}
+.badge{font-size:11px;padding:2px 8px;border-radius:999px;background:#ede9f8;color:#5b3fa6;display:inline-block;margin:2px 2px 2px 0;}
+.badge-edit{background:#e6f4ea;color:#1e7e34;}
+.badge-view{background:#e8f0fe;color:#1a56cc;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal{background:#fff;border-radius:8px;border:1px solid #e8eaed;width:720px;max-width:100%;box-shadow:0 4px 24px rgba(0,0,0,0.12);}
+.modal-header{padding:16px 20px;border-bottom:1px solid #e8eaed;display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:500;color:#1a2540;}
+.btn-icon{background:none;border:none;cursor:pointer;color:#80868b;font-size:18px;padding:2px;}
+.stepper{display:flex;align-items:center;padding:16px 24px;border-bottom:1px solid #e8eaed;background:#fafafa;}
+.step{display:flex;align-items:center;gap:8px;}
+.step-circle{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;border:1.5px solid #d1d5db;color:#80868b;background:#fff;}
+.step.active .step-circle{background:#7c5cbf;border-color:#7c5cbf;color:#fff;}
+.step.done .step-circle{background:#e6f4ea;border-color:#34a853;color:#1e7e34;}
+.step-label{font-size:12px;color:#80868b;}
+.step.active .step-label{color:#7c5cbf;font-weight:500;}
+.step.done .step-label{color:#1e7e34;}
+.step-line{flex:1;height:1px;background:#e8eaed;margin:0 10px;}
+.modal-body{padding:20px 24px;max-height:500px;overflow-y:auto;}
+.modal-footer{padding:14px 20px;border-top:1px solid #e8eaed;display:flex;justify-content:space-between;align-items:center;background:#fafafa;}
+.btn-primary{background:#7c5cbf;color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:13px;cursor:pointer;font-weight:500;}
+.btn-secondary{background:#fff;color:#5f6368;border:1px solid #d1d5db;border-radius:6px;padding:8px 20px;font-size:13px;cursor:pointer;}
+.btn-filter{background:#7c5cbf;color:#fff;border:none;border-radius:6px;padding:7px 16px;font-size:12px;cursor:pointer;}
+.btn-clear{background:none;border:none;color:#7c5cbf;font-size:12px;cursor:pointer;}
+.filters-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.filter-field{flex:1;min-width:140px;}
+.filter-field label{font-size:11px;color:#80868b;display:block;margin-bottom:4px;}
+.filter-field input,.filter-field select{width:100%;padding:7px 10px;font-size:12px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:#3c4043;}
+.count-bar{font-size:12px;color:#80868b;margin-bottom:10px;}
+.client-section{margin-bottom:14px;border:1px solid #e8eaed;border-radius:8px;overflow:hidden;}
+.client-section-header{padding:10px 16px;background:#f8f9fa;border-bottom:1px solid #e8eaed;}
+.client-section-name{font-size:13px;font-weight:500;color:#1a2540;}
+.client-section-sub{font-size:11px;color:#80868b;margin-top:2px;}
+.switch{position:relative;display:inline-block;width:32px;height:18px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#d1d5db;border-radius:18px;transition:.2s;}
+.slider:before{position:absolute;content:"";height:12px;width:12px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+.switch input:checked+.slider{background:#7c5cbf;}
+.switch input:checked+.slider:before{transform:translateX(14px);}
+.switch input:disabled+.slider{opacity:0.4;cursor:not-allowed;}
+.prototype-bar{background:#7c5cbf;padding:6px 16px;display:flex;align-items:center;gap:8px;}
+.prototype-bar span{font-size:11px;color:rgba(255,255,255,0.85);letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<div class="prototype-bar"><i class="ti ti-flask" style="font-size:14px;color:rgba(255,255,255,0.7);"></i><span>PROTOTIPO - Permissoes de acesso - modulo de dividendos</span></div>
+<div class="nibo-topnav"><div class="nibo-logo"><div class="nibo-logo-dot"></div></div><span class="nibo-office">Escritorio contabil TIME</span><div class="nibo-nav-icons"><div class="nibo-nav-icon"><i class="ti ti-search"></i></div><div class="nibo-nav-icon"><i class="ti ti-plus"></i></div><div class="nibo-nav-icon"><i class="ti ti-message-circle"></i><span class="nibo-badge">3</span></div><div class="nibo-nav-icon"><i class="ti ti-bell"></i></div></div></div>
+<div class="nibo-layout">
+<div class="nibo-sidebar">
+<div class="nibo-sidebar-section">Operacao</div>
+<div class="nibo-sidebar-item"><i class="ti ti-calendar-check"></i>Obrigacoes<span class="nibo-badge-pill">11</span></div>
+<div class="nibo-sidebar-item"><i class="ti ti-list-check"></i>Tarefas e Processos</div>
+<div class="nibo-sidebar-item"><i class="ti ti-users"></i>Relacionamento</div>
+<div class="nibo-sidebar-item"><i class="ti ti-file-text"></i>Documentos recebidos</div>
+<div class="nibo-sidebar-item"><i class="ti ti-robot"></i>Automacao contabil</div>
+<div class="nibo-sidebar-item active"><i class="ti ti-chart-pie"></i>Dividendos</div>
+<div class="nibo-sidebar-sub">Aba principal</div>
+<div class="nibo-sidebar-sub active">Configuracoes</div>
+<div class="nibo-sidebar-section">Cadastros</div>
+<div class="nibo-sidebar-item"><i class="ti ti-building"></i>Clientes</div>
+<div class="nibo-sidebar-item"><i class="ti ti-settings"></i>Configuracoes</div>
+</div>
+<div class="nibo-main">
+<div class="nibo-module-header"><span class="nibo-module-title">Dividendos</span><div class="nibo-module-tab">Aba principal</div><div class="nibo-module-tab active">Configuracoes</div></div>
+<div class="nibo-content-wrap">
+<div class="nibo-subnav"><div class="nibo-subnav-item active">Permissoes de acesso</div><div class="nibo-subnav-item">Notificacoes</div></div>
+<div class="nibo-page">
+<div class="nibo-page-title">Permissoes de acesso</div>
+<div id="toast" class="toast" style="display:none;"><i class="ti ti-check"></i> Permissoes atualizadas com sucesso.</div>
+<div class="nibo-card">
+<div class="nibo-card-header">
+<div><div class="nibo-card-title"><i class="ti ti-users" style="font-size:15px;color:#7c5cbf;"></i>Permissao de acesso de clientes ao modulo de dividendos</div><div class="nibo-card-desc">Clientes com acesso poderao visualizar as informacoes de dividendos no portal.</div></div>
+<button class="nibo-btn-edit" onclick="showModal()"><i class="ti ti-edit" style="font-size:13px;"></i>Editar permissoes</button>
+</div>
+<div id="config-table-wrap"><div class="empty">Nenhuma permissao configurada.</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="screen-modal" class="modal-overlay">
+<div class="modal">
+<div class="modal-header"><span class="modal-title">Editar permissoes de acesso</span><button class="btn-icon" onclick="closeModal()"><i class="ti ti-x"></i></button></div>
+<div class="stepper"><div class="step active" id="st1"><div class="step-circle" id="sc1">1</div><span class="step-label">Selecionar clientes</span></div><div class="step-line"></div><div class="step" id="st2"><div class="step-circle" id="sc2">2</div><span class="step-label">Selecionar contatos</span></div></div>
+<div class="modal-body">
+<div id="pane1">
+<div class="filters-row"><div class="filter-field" style="flex:2;min-width:200px;"><label>Buscar por</label><input type="text" placeholder="Codigo, nome ou CPF/CNPJ" oninput="filterTable(this.value)" /></div><div class="filter-field"><label>Tipo de cliente</label><select><option>Todos</option><option>Pessoa juridica</option><option>Pessoa fisica</option></select></div></div>
+<div class="filters-row"><div class="filter-field"><label>Regime tributario</label><select><option>Todos</option><option>Lucro Presumido</option><option>Simples Nacional</option></select></div><div class="filter-field"><label>Ramo de atividade</label><select><option>Todos</option><option>Comercio</option><option>Servicos</option></select></div><div class="filter-field"><label>Grupo de clientes</label><select><option>Todos</option><option>Grupo A</option><option>Grupo B</option></select></div></div>
+<div class="filters-row"><button class="btn-filter">Filtrar</button><button class="btn-clear">Limpar filtros</button></div>
+<div class="count-bar" id="count-bar">Exibindo <strong>5</strong> itens</div>
+<table class="nibo-table"><thead><tr><th style="width:32px;"><input type="checkbox" class="cb" onchange="toggleAll(this)" /></th><th style="width:65px;">Codigo</th><th>Cliente</th><th style="width:120px;">Tipo</th><th style="width:140px;">Regime</th></tr></thead>
+<tbody id="clients-tbody">
+<tr data-id="1" data-name="BK empresa nova" data-code="0987"><td><input type="checkbox" class="cb client-cb" onchange="updateCount()" /></td><td>0987</td><td>BK empresa nova<br><span style="font-size:11px;color:#80868b;">60.031.970/0001-86</span></td><td>Pessoa juridica</td><td></td></tr>
+<tr data-id="2" data-name="BK empresa nova Plus" data-code="54353"><td><input type="checkbox" class="cb client-cb" onchange="updateCount()" /></td><td>54353</td><td>BK empresa nova Plus<br><span style="font-size:11px;color:#80868b;">957.177.640-81</span></td><td>Pessoa fisica</td><td>Lucro Presumido</td></tr>
+<tr data-id="3" data-name="CEI Teste" data-code=""><td><input type="checkbox" class="cb client-cb" onchange="updateCount()" /></td><td></td><td>CEI Teste<br><span style="font-size:11px;color:#80868b;">222.222.222-22</span></td><td></td><td></td></tr>
+<tr data-id="4" data-name="Papelaria Criativa LTDA" data-code="12345"><td><input type="checkbox" class="cb client-cb" onchange="updateCount()" /></td><td>12345</td><td>Papelaria Criativa LTDA<br><span style="font-size:11px;color:#80868b;">12.345.678/0001-99</span></td><td>Pessoa juridica</td><td>Simples Nacional</td></tr>
+<tr data-id="5" data-name="Tech Solutions ME" data-code="98765"><td><input type="checkbox" class="cb client-cb" onchange="updateCount()" /></td><td>98765</td><td>Tech Solutions ME<br><span style="font-size:11px;color:#80868b;">98.765.432/0001-10</span></td><td>Pessoa juridica</td><td>Lucro Real</td></tr>
+</tbody></table>
+</div>
+<div id="pane2" style="display:none;">
+<div style="font-size:12px;color:#80868b;margin-bottom:14px;">Selecione os contatos e defina o nivel de acesso de cada um ao modulo de dividendos.</div>
+<div id="access-sections"></div>
+</div>
+</div>
+<div class="modal-footer"><button class="btn-secondary" id="btn-back" style="visibility:hidden;" onclick="goBack()"><i class="ti ti-arrow-left" style="font-size:13px;vertical-align:-2px;margin-right:4px;"></i>Voltar</button><button class="btn-primary" id="btn-next" onclick="goNext()">Proximo</button></div>
+</div>
+</div>
+<script>
+var currentStep=1,savedPermissions=[];
+var clientContacts={1:[{name:'Ana Paula',depts:['Financeiro','Contabilidade']},{name:'Carlos Souza',depts:['RH']},{name:'Mariana Lima',depts:['Financeiro','Diretoria']}],2:[{name:'Joao Silva',depts:['Comercial']},{name:'Patricia Alves',depts:['Operacoes','Comercial']}],3:[{name:'Roberto Nunes',depts:['Diretoria']}],4:[{name:'Fernanda Costa',depts:['Financeiro']},{name:'Lucas Martins',depts:['TI','Suporte']},{name:'Beatriz Rocha',depts:['Financeiro','RH']}],5:[{name:'Andre Lima',depts:['Gerencia']},{name:'Renata Gomes',depts:['Suporte','Operacoes']}]};
+function getSaved(id){return savedPermissions.find(function(p){return p.clientId===id;});}
+function showModal(){document.getElementById('screen-modal').classList.add('open');document.getElementById('toast').style.display='none';document.querySelectorAll('.client-cb').forEach(function(cb){cb.checked=!!getSaved(cb.closest('tr').dataset.id);});setStep(1);updateCount();}
+function closeModal(){document.getElementById('screen-modal').classList.remove('open');}
+function getSelected(){var s=[];document.querySelectorAll('.client-cb:checked').forEach(function(cb){var r=cb.closest('tr');if(r)s.push({id:r.dataset.id,name:r.dataset.name,code:r.dataset.code});});return s;}
+function updateCount(){var c=document.querySelectorAll('.client-cb:checked').length,t=document.querySelectorAll('.client-cb').length;document.getElementById('count-bar').innerHTML='Exibindo <strong>'+t+'</strong> itens'+(c?' | <strong>'+c+'</strong> selecionados':'');}
+function toggleAll(cb){document.querySelectorAll('.client-cb').forEach(function(c){c.checked=cb.checked;});updateCount();}
+function filterTable(v){document.querySelectorAll('#clients-tbody tr').forEach(function(r){r.style.display=r.dataset.name.toLowerCase().includes(v.toLowerCase())?'':'none';});}
+function toggleContactRow(cb){var r=cb.closest('tr'),s=r.querySelector('.switch input');s.disabled=!cb.checked;if(!cb.checked)s.checked=false;}
+function setStep(n){currentStep=n;for(var i=1;i<=2;i++){var st=document.getElementById('st'+i),sc=document.getElementById('sc'+i);st.className='step'+(i===n?' active':(i<n?' done':''));sc.innerHTML=i<n?'<i class="ti ti-check" style="font-size:12px;"></i>':i;}document.getElementById('pane1').style.display=n===1?'':'none';document.getElementById('pane2').style.display=n===2?'':'none';document.getElementById('btn-back').style.visibility=n===1?'hidden':'visible';document.getElementById('btn-next').textContent=n===2?'Salvar':'Proximo';}
+function buildAccessSections(){var sel=getSelected(),html='';sel.forEach(function(s){var contacts=clientContacts[s.id]||[],saved=getSaved(s.id);html+='<div class="client-section" data-client-id="'+s.id+'"><div class="client-section-header"><div class="client-section-name">'+s.name+'</div><div class="client-section-sub">'+contacts.length+' contato(s) disponivel(is)</div></div><table class="nibo-table"><thead><tr><th style="width:32px;"></th><th>Contato</th><th>Departamentos</th><th style="width:165px;">Permissao para criar/editar</th></tr></thead><tbody>';contacts.forEach(function(c){var sc=saved?saved.contacts.find(function(x){return x.name===c.name;}):null;var chk=!!sc,edit=sc?sc.canEdit:false;html+='<tr data-contact="'+c.name+'"><td><input type="checkbox" class="cb"'+(chk?' checked':'')+' onchange="toggleContactRow(this)" /></td><td><i class="ti ti-user" style="font-size:13px;color:#80868b;margin-right:6px;"></i>'+c.name+'</td><td>'+c.depts.map(function(d){return'<span class="badge">'+d+'</span>';}).join('')+'</td><td style="text-align:center;"><label class="switch"><input type="checkbox"'+(edit?' checked':'')+(!chk?' disabled':'')+' /><span class="slider"></span></label></td></tr>';});html+='</tbody></table></div>';});document.getElementById('access-sections').innerHTML=html;}
+function collectPermissions(){var r=[];document.querySelectorAll('#access-sections .client-section').forEach(function(s){var contacts=[];s.querySelectorAll('tbody tr').forEach(function(row){var cb=row.querySelector('input[type=checkbox].cb');if(cb&&cb.checked)contacts.push({name:row.dataset.contact,canEdit:row.querySelector('.switch input').checked});});if(contacts.length>0)r.push({clientId:s.dataset.clientId,clientName:s.querySelector('.client-section-name').textContent,contacts:contacts});});return r;}
+function renderConfigTable(){var wrap=document.getElementById('config-table-wrap');if(!savedPermissions.length){wrap.innerHTML='<div class="empty">Nenhuma permissao configurada.</div>';return;}var html='<table class="nibo-table"><thead><tr><th style="width:15%">Codigo</th><th style="width:25%">Cliente</th><th>Somente visualizar</th><th>Criar/editar distribuicoes</th></tr></thead><tbody>';savedPermissions.forEach(function(p){var row=document.querySelector('#clients-tbody tr[data-id="'+p.clientId+'"]');var code=row?row.dataset.code:'';var v=p.contacts.filter(function(c){return!c.canEdit;}),e=p.contacts.filter(function(c){return c.canEdit;});html+='<tr><td>'+code+'</td><td>'+p.clientName+'</td><td>'+(v.length?v.map(function(c){return'<span class="badge badge-view">'+c.name+'</span>';}).join(''):'<span class="none-label">-</span>')+'</td><td>'+(e.length?e.map(function(c){return'<span class="badge badge-edit">'+c.name+'</span>';}).join(''):'<span class="none-label">-</span>')+'</td></tr>';});wrap.innerHTML=html+'</tbody></table>';}
+function goNext(){if(currentStep===1){if(!document.querySelector('.client-cb:checked'))return;buildAccessSections();setStep(2);}else{savedPermissions=collectPermissions();closeModal();renderConfigTable();var t=document.getElementById('toast');t.style.display='flex';setTimeout(function(){t.style.display='none';},3000);}}
+function goBack(){if(currentStep>1)setStep(currentStep-1);}
+updateCount();
+</script>
+</body>
+</html>
